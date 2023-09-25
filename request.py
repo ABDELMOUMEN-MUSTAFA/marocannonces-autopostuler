@@ -64,7 +64,7 @@ class Request:
                 self.__addOffer(offerID, offerItem.find('h3').contents[0].strip(), offerItem.find(class_='location').contents[0], date_publication, postuler_url)
                 print(f"{Fore.GREEN}- Recevoir une offre appelée '{offerItem.find('h3').contents[0].strip()}'")
             
-            if offerID >= 4 or self.countNotFoundOffers > 40:
+            if offerID >= 50 or self.countNotFoundOffers > 40:
                 break
                     
         return self.offers
