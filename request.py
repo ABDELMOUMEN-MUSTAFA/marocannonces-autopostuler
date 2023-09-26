@@ -1,11 +1,10 @@
 from bs4 import BeautifulSoup
 import requests as req
 import colorama
-from colorama import Fore, Back
+from colorama import Fore
 
 class Request:
     def __init__(self, base_url):
-        self.__loading()
         self.base_url = base_url
         self.page = req.get(base_url)
         self.page.encoding = "utf-8"
@@ -39,6 +38,7 @@ class Request:
         offerID = 0
         pages = self.__getPagination()
         for page in pages:
+            self.__loading()
             request = self.__class__(self.base_url + '&pge=' + page)
             offersItems = request.bs.find(class_='cars-list')
             # if there is not offer return empty list
@@ -49,12 +49,14 @@ class Request:
                 # This is not an offer maybe it's an advertising
                 if not offerItem.find('h3'):
                     print(f"{Fore.MAGENTA}- Publicité !!!")
+                    self.__loading()
                     continue
 
                 # check if this offer still available
                 postuler_url = self.__getPostulerUrl('https://www.marocannonces.com/' + offerItem.find('a').get('href'))
                 if not postuler_url:
                     print(f"{Fore.RED}- L'offre nommée '{offerItem.find('h3').contents[0].strip()}' est introuvable.")
+                    self.__loading()
                     continue
         
                 offerID = offerID + 1
@@ -63,6 +65,7 @@ class Request:
                 date_publication = f"{date} - {time}"
                 self.__addOffer(offerID, offerItem.find('h3').contents[0].strip(), offerItem.find(class_='location').contents[0], date_publication, postuler_url)
                 print(f"{Fore.GREEN}- Recevoir une offre appelée '{offerItem.find('h3').contents[0].strip()}'")
+                self.__loading()
             
             if offerID >= 50 or self.countNotFoundOffers > 40:
                 break
